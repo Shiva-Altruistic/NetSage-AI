@@ -125,8 +125,14 @@ app.get('/api/overview', (req, res) => {
   const humanReviews = readCSVFile(path.join(PROJECT_ROOT, 'Results', 'human_review.csv'));
   const evalResults = readCSVFile(path.join(PROJECT_ROOT, 'Results', 'eval_results.csv'));
 
-  const totalCases = cases.length;
-  const evaluatedCount = promptComp.length;
+  const evaluatedCount = evalResults.length > 0 ? evalResults.length : promptComp.length;
+
+  let fullSuiteScore = 0;
+  if (evalResults.length > 0) {
+    fullSuiteScore =
+      evalResults.reduce((acc, r) => acc + (parseFloat(r.overall_score) || 0), 0) /
+      evalResults.length;
+  }
 
   let v1AvgScore = 0;
   let v2AvgScore = 0;
@@ -168,6 +174,7 @@ app.get('/api/overview', (req, res) => {
   res.json({
     totalCases,
     evaluatedCount,
+    fullSuiteScore: (fullSuiteScore * 100).toFixed(1),
     v1AvgScore: (v1AvgScore * 100).toFixed(1),
     v2AvgScore: (v2AvgScore * 100).toFixed(1),
     approvalRate: approvalRate.toFixed(1),
