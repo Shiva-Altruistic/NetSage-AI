@@ -54,15 +54,19 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
     sys.stdout.reconfigure(encoding="utf-8")
     sys.stderr.reconfigure(encoding="utf-8")
 
-# ---------------------------------------------------------------------------
-# Imports from Rules/
-# ---------------------------------------------------------------------------
-
 sys.path.insert(0, str(RULES_DIR))
 
 from checker import check_case
 from prompt_engine import DiagnosisEngine, Diagnosis, SYSTEM_PROMPT, DEFAULT_API_KEY
 from evaluator import score_case, generate_eval_csv, generate_eval_report, CaseScore
+
+try:
+    from Prompt_Testing.prompt_v2 import SYSTEM_PROMPT_V2
+except ImportError:
+    try:
+        from prompt_v2 import SYSTEM_PROMPT_V2
+    except ImportError:
+        SYSTEM_PROMPT_V2 = SYSTEM_PROMPT
 
 
 def load_dotenv_file(path: Path) -> None:
@@ -167,19 +171,21 @@ def run_full_pipeline(
     target_id: str | None = None,
     output_dir: Path = DEFAULT_OUTPUT_DIR,
     delay: float = 1.0,
+    prompt_version: str = "V2",
 ) -> None:
     """Full pipeline: checker → Gemini → evaluator."""
     targets = select_targets(cases, target_id)
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    engine = DiagnosisEngine(api_key=api_key)
+    active_prompt = SYSTEM_PROMPT_V2 if prompt_version == "V2" else SYSTEM_PROMPT
+    engine = DiagnosisEngine(api_key=api_key, system_prompt=active_prompt)
 
-    diagnoses: list[tuple[dict, Diagnosis]] = []
+    diagnoses: list[tuple[dict, Diagnosis, float]] = []
     scores: list[CaseScore] = []
 
     total = len(targets)
-    print(f"\n>> NetSage AI -- Diagnosing {total} case(s)\n")
+    print(f"\n>> NetSage AI -- Diagnosing {total} case(s) using Prompt {prompt_version}\n")
 
     for i, case in enumerate(targets, 1):
         case_id = case["case_id"]
@@ -191,21 +197,23 @@ def run_full_pipeline(
 
         print(f"checker({fails}F) → ", end="", flush=True)
 
-        # Step 2: Gemini diagnosis
+        # Step 2: Gemini diagnosis with wall-clock latency timing
+        t_start = time.time()
         diagnosis = engine.diagnose(case, findings)
-        diagnoses.append((case, diagnosis))
+        latency_sec = round(time.time() - t_start, 2)
+        diagnoses.append((case, diagnosis, latency_sec))
 
         if "[API ERROR]" in diagnosis.fault or "[PARSE ERROR]" in diagnosis.fault:
-            print(f"[!] {diagnosis.fault[:120]}", flush=True)
+            print(f"[!] ({latency_sec}s) {diagnosis.fault[:120]}", flush=True)
         else:
             print(
-                f"[+] {diagnosis.concept_tag}/{diagnosis.severity} ",
+                f"[+] {diagnosis.concept_tag}/{diagnosis.severity} ({latency_sec}s) ",
                 end="",
                 flush=True,
             )
 
             # Step 3: evaluate against ground truth
-            score = score_case(case, diagnosis)
+            score = score_case(case, diagnosis, latency_sec=latency_sec)
             scores.append(score)
 
             print(f"(score: {score.overall_score:.0%})", flush=True)
@@ -217,8 +225,9 @@ def run_full_pipeline(
                     case=case,
                     diagnosis=asdict(diagnosis),
                     findings=findings,
-                    prompt_version="V1",
+                    prompt_version=prompt_version,
                     model_name=engine.model_name,
+                    latency_sec=latency_sec,
                 )
             except Exception:
                 pass
@@ -241,19 +250,17 @@ def run_full_pipeline(
         "next_command",
         "fix",
         "reasoning",
+        "latency_sec",
     ]
 
     with diag_path.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=diag_fields)
+        writer = csv.DictWriter(f, fieldnames=diag_fields, extrasaction="ignore")
         writer.writeheader()
 
-        for case, diagnosis in diagnoses:
-            row = {
-                key: value
-                for key, value in asdict(diagnosis).items()
-                if key in diag_fields
-            }
+        for case, diagnosis, lat in diagnoses:
+            row = asdict(diagnosis)
             row["case_id"] = case["case_id"]
+            row["latency_sec"] = lat
             writer.writerow(row)
 
     print(f"\n[>] AI diagnoses saved: {diag_path}")
@@ -346,6 +353,12 @@ Examples:
         help="Delay between Gemini calls in seconds (default: 1.0)",
     )
     parser.add_argument(
+        "--prompt-version",
+        choices=["V1", "V2"],
+        default="V2",
+        help="Prompt version to use for diagnosis (default: V2)",
+    )
+    parser.add_argument(
         "--review",
         action="store_true",
         help="Launch human review workflow immediately following AI diagnosis",
@@ -368,6 +381,7 @@ Examples:
             target_id=args.case,
             output_dir=output_dir,
             delay=args.delay,
+            prompt_version=args.prompt_version,
         )
         if args.review:
             from human_review import (

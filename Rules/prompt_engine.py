@@ -302,7 +302,7 @@ class DiagnosisEngine:
         return build_user_prompt(case, findings)
 
     def diagnose(self, case: dict, findings: list[dict],
-                 retry_attempts: int = 2, retry_delay: float = 2.0) -> Diagnosis:
+                 retry_attempts: int = 3, retry_delay: float = 3.0) -> Diagnosis:
         """Send a case to the LLM and return a structured Diagnosis."""
         self._init_model()
         prompt = self.build_prompt(case, findings)
@@ -333,7 +333,10 @@ class DiagnosisEngine:
             except Exception as e:
                 last_error = e
                 if attempt <= retry_attempts:
-                    time.sleep(retry_delay * attempt)
+                    if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+                        time.sleep(20.0)
+                    else:
+                        time.sleep(retry_delay * attempt)
                     continue
 
         return Diagnosis(

@@ -41,6 +41,17 @@ DATASET_CSV = PROJECT_ROOT / "Dataset" / "cases.csv"
 if str(RULES_DIR) not in sys.path:
     sys.path.insert(0, str(RULES_DIR))
 
+# Load .env file
+env_file = PROJECT_ROOT / ".env"
+if env_file.exists():
+    for line in env_file.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1)
+            k, v = k.strip(), v.strip().strip("\"'")
+            if k and k not in os.environ:
+                os.environ[k] = v
+
 # ---------------------------------------------------------------------------
 # ANSI Terminal Styling
 # ---------------------------------------------------------------------------
@@ -126,9 +137,9 @@ def run_end_to_end_demo(auto: bool = False) -> None:
     pause(auto)
 
     # -----------------------------------------------------------------------
-    # STAGE 2: Deterministic Pre-Analysis Rule Checker
+    # STAGE 2: Deterministic Rule Pre-Analysis
     # -----------------------------------------------------------------------
-    print_step(2, "Deterministic Rule Pre-Analysis (Rules/checker.py)")
+    print_step(2, "Deterministic Rule Pre-Analysis (24 Rules in Rules/checker.py)")
     try:
         from Rules.checker import check_case
     except ImportError:
@@ -186,7 +197,7 @@ def run_end_to_end_demo(auto: bool = False) -> None:
     # -----------------------------------------------------------------------
     # STAGE 4: Prompt A/B Optimization Benchmark
     # -----------------------------------------------------------------------
-    print_step(4, "Prompt A/B Optimization Benchmark (V1 vs V2)")
+    print_step(4, "Prompt A/B Optimization Benchmark (8-Case Focus Subset)")
     comp_csv = RESULTS_DIR / "prompt_comparison.csv"
     if comp_csv.exists():
         with comp_csv.open("r", encoding="utf-8") as f:
@@ -210,7 +221,7 @@ def run_end_to_end_demo(auto: bool = False) -> None:
         avg_v2 = v2_tot / len(comp_rows)
         print("─" * 68)
         print(f"{BOLD}Average Score:   V1: {avg_v1:.1f}%   →   V2: {avg_v2:.1f}%   (Delta: {GREEN}+{avg_v2-avg_v1:.1f}%{RESET}){RESET}")
-        print(f"{GREEN}✓ Disambiguation rules successfully improved concept tag accuracy to 87.5%{RESET}")
+        print(f"{GREEN}✓ Disambiguation rules improved concept tag accuracy to 87.5% on focus subset (93.3% across all 30 cases){RESET}")
 
     pause(auto)
 
@@ -262,7 +273,7 @@ def run_end_to_end_demo(auto: bool = False) -> None:
     logger = RAILogger()
     print("Evaluating NIST AI RMF & Google SAIF compliance pillars:")
     print("  1. Ethical Data Provenance: Verified instructor synthetic data (zero PII/credentials)")
-    print("  2. Zero-Hallucination Guardrail: 100% of cited interfaces grounded in case evidence")
+    print("  2. Zero-Hallucination Guardrail: 90.0% of cited interfaces grounded in case evidence across all 30 cases")
     print(f"  3. Uncertainty Calibration: Testing intentional ambiguity set {UNCERTAIN_CASES}")
 
     print("\nDeep-dive audit into intentionally ambiguous cases:")

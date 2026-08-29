@@ -31,6 +31,8 @@ class CaseScore:
     fault_similarity: float = 0.0
     fix_similarity: float = 0.0
     confidence_appropriate: bool = False
+    evidence_grounded: bool = True
+    latency_sec: float = 0.0
     overall_score: float = 0.0
 
 
@@ -113,12 +115,13 @@ def keyword_overlap(text_a: str, text_b: str) -> float:
 UNCERTAIN_CASES = {"C005", "C023", "C030"}
 
 
-def score_case(case: dict, diagnosis) -> CaseScore:
+def score_case(case: dict, diagnosis, latency_sec: float = 0.0) -> CaseScore:
     """Score a single AI diagnosis against ground truth.
 
     Args:
         case: row from cases.csv (with ground-truth fields)
         diagnosis: Diagnosis dataclass from prompt_engine
+        latency_sec: Wall-clock latency for the diagnosis in seconds
     """
     case_id = case.get("case_id", "?")
 
@@ -163,6 +166,21 @@ def score_case(case: dict, diagnosis) -> CaseScore:
     else:
         confidence_ok = ai_confidence == "high"
 
+    # --- Evidence grounding (Interface check against show output) ---
+    all_evidence = f"{case.get('symptom', '')} {case.get('topology_note', '')} {case.get('show_output', '')}"
+    cited_interfaces = re.findall(
+        r"\b(?:[A-Z][a-z0-9/.]*Ethernet\d[0-9/.]*|Fa\d[0-9/.]*|Gi\d[0-9/.]*|Se\d[0-9/.]*|Vlan\d+)\b",
+        f"{ai_fault} {ai_fix}",
+        re.I,
+    )
+    grounded = True
+    for iface in cited_interfaces:
+        if iface.lower() in ("ethernet", "fastethernet", "gigabitethernet", "serial"):
+            continue
+        if iface.lower() not in all_evidence.lower():
+            grounded = False
+            break
+
     # --- Overall weighted score ---
     overall = (
         0.30 * fault_sim +
@@ -181,6 +199,8 @@ def score_case(case: dict, diagnosis) -> CaseScore:
         fault_similarity=fault_sim,
         fix_similarity=fix_sim,
         confidence_appropriate=confidence_ok,
+        evidence_grounded=grounded,
+        latency_sec=round(latency_sec, 2),
         overall_score=round(overall, 4),
     )
 
@@ -191,7 +211,8 @@ def generate_eval_csv(scores: list[CaseScore], output_path: Path):
     """Write per-case evaluation results to CSV."""
     fieldnames = [
         "case_id", "osi_layer_match", "concept_tag_match", "severity_match",
-        "fault_similarity", "fix_similarity", "confidence_appropriate", "overall_score"
+        "fault_similarity", "fix_similarity", "confidence_appropriate",
+        "evidence_grounded", "latency_sec", "overall_score"
     ]
     with output_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -202,6 +223,7 @@ def generate_eval_csv(scores: list[CaseScore], output_path: Path):
             row["concept_tag_match"] = int(row["concept_tag_match"])
             row["severity_match"] = int(row["severity_match"])
             row["confidence_appropriate"] = int(row["confidence_appropriate"])
+            row["evidence_grounded"] = int(row["evidence_grounded"])
             writer.writerow(row)
 
 
@@ -224,6 +246,9 @@ def generate_eval_report(
     avg_fault_sim = sum(s.fault_similarity for s in scores) / n
     avg_fix_sim = sum(s.fix_similarity for s in scores) / n
     conf_acc = sum(s.confidence_appropriate for s in scores) / n
+    grounded_acc = sum(s.evidence_grounded for s in scores) / n
+    latencies = [s.latency_sec for s in scores if s.latency_sec > 0]
+    avg_latency = (sum(latencies) / len(latencies)) if latencies else 0.0
 
     # Per-category breakdown
     case_lookup = {c["case_id"]: c for c in cases}
@@ -235,17 +260,20 @@ def generate_eval_report(
     # Build report
     lines = [
         "# NetSage AI — Evaluation Report\n",
-        f"**Cases evaluated:** {n}",
-        f"**Average overall score:** {avg_overall:.1%}\n",
+        f"**Cases evaluated:** {n} (Full Benchmark Suite)",
+        f"**Average overall score:** {avg_overall:.1%}",
+        f"**Mean inference latency:** {avg_latency:.2f}s\n",
         "## Accuracy Breakdown\n",
-        "| Metric | Score |",
-        "|---|---|",
-        f"| OSI Layer (exact match) | {osi_acc:.1%} |",
-        f"| Concept Tag (exact match) | {tag_acc:.1%} |",
-        f"| Severity (exact match) | {sev_acc:.1%} |",
-        f"| Fault Description (text similarity) | {avg_fault_sim:.1%} |",
-        f"| Fix Quality (text similarity) | {avg_fix_sim:.1%} |",
-        f"| Confidence Appropriateness | {conf_acc:.1%} |",
+        "| Metric | Score | Measurement Method |",
+        "|---|---|---|",
+        f"| OSI Layer (exact match) | {osi_acc:.1%} | Exact numeric layer match |",
+        f"| Concept Tag (exact match) | {tag_acc:.1%} | Ground truth CCNA category match |",
+        f"| Severity (exact match) | {sev_acc:.1%} | Ground truth severity match |",
+        f"| Fault Description (text similarity) | {avg_fault_sim:.1%} | TF-IDF Cosine & keyword overlap |",
+        f"| Fix Quality (text similarity) | {avg_fix_sim:.1%} | Remediation syntax overlap |",
+        f"| Confidence Appropriateness | {conf_acc:.1%} | Hedging on ambiguous cases |",
+        f"| Evidence Grounding Rate | {grounded_acc:.1%} | Cited interfaces verified in transcript |",
+        f"| Mean Inference Latency | {avg_latency:.2f}s | Wall-clock API response time |",
         "",
         "## Per-Category Scores\n",
         "| Category | Cases | Avg Score |",

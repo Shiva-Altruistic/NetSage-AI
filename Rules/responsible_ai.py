@@ -92,6 +92,7 @@ class RAIAuditEvent:
     hallucination_warning: str
     human_review_status: str  # Pending | Approved | Modified | Rejected
     remediation_command: str
+    latency_sec: float = 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -177,6 +178,7 @@ class RAILogger:
         prompt_version: str = "V2",
         model_name: str = "gemini-3.5-flash-lite",
         human_review_status: str = "Pending",
+        latency_sec: float = 0.0,
     ) -> RAIAuditEvent:
         """Perform a full Responsible AI evaluation on a diagnosis and log it."""
         cid = case.get("case_id", "UNKNOWN")
@@ -218,6 +220,7 @@ class RAILogger:
             hallucination_warning=warning,
             human_review_status=human_review_status,
             remediation_command=fix_text[:120].replace("\n", " "),
+            latency_sec=round(latency_sec, 2),
         )
 
         self.log_event(event)
