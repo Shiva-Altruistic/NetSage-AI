@@ -16,11 +16,11 @@ In enterprise campus and service provider networks, unplanned downtime costs an 
 
 **NetSage AI** introduces a **Hybrid Deterministic + Generative Architecture** tailored for Cisco IOS network operations:
 
-1. **Deterministic Rule Engine (19 Rules)**: Pre-screens raw Cisco `show` outputs for hard configuration facts (subnet masks, default gateways, VLAN mismatches, route reachability) before any LLM inference.
+1. **Deterministic Rule Engine (24 Rules)**: Pre-screens raw Cisco `show` outputs for hard configuration facts (subnet masks, default gateways, VLAN mismatches, route reachability) before any LLM inference.
 2. **AI Diagnosis Engine (Prompt V2)**: Powered by Google Gemini 3.5 Flash, utilizing engineered CCNA/CCNP disambiguation heuristics and constrained JSON output to pinpoint the exact root cause.
 3. **Operational Safety & Action Risk Guardrails**: Automatically screens proposed remediation commands against a destructive action taxonomy, preventing destructive commands from automated deployment.
 4. **Human-in-the-Loop Review Gate**: Empowers network engineers to inspect, override, and sign off on diagnoses with cryptographic audit trails.
-5. **Responsible AI Governance**: NIST AI RMF 1.0 and Google SAIF aligned, featuring uncertainty calibration on ambiguous edge cases and 100% evidence grounding.
+5. **Responsible AI Governance**: NIST AI RMF 1.0 and Google SAIF aligned, featuring uncertainty calibration on ambiguous edge cases and 90.0% evidence grounding.
 6. **Full-Stack Operations Dashboard**: Built with React 18, Vite 6, Chart.js, Express, and a dual-mode Crisp White / Multi-Color Cyberpunk design system.
 
 ---
@@ -30,7 +30,7 @@ In enterprise campus and service provider networks, unplanned downtime costs an 
 ```mermaid
 flowchart TD
     subgraph INGESTION["1. Ingestion & Pre-Analysis"]
-        A["Network Evidence\n(Symptom, Topology, Show Output)"] --> B["Deterministic Rule Checker\n(Rules/checker.py - 19 CCNA Rules)"]
+        A["Network Evidence\n(Symptom, Topology, Show Output)"] --> B["Deterministic Rule Checker\n(Rules/checker.py - 24 CCNA Rules)"]
     end
 
     subgraph INFERENCE["2. AI Reasoning & Disambiguation"]
