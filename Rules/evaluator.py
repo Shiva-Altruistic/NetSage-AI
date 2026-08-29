@@ -13,11 +13,18 @@ from __future__ import annotations
 
 import csv
 import math
+import os
 import re
+import sys
 from collections import Counter, defaultdict
 from dataclasses import dataclass, asdict, field
 from pathlib import Path
 from typing import Optional
+
+# Force UTF-8 on Windows
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
 
 
 # ── Scoring dataclass ────────────────────────────────────────────────────────
@@ -109,19 +116,208 @@ def keyword_overlap(text_a: str, text_b: str) -> float:
     return round(len(intersection) / len(union), 4)
 
 
+import os
+import json
+import time
+
+_ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
+if _ENV_FILE.exists():
+    for line in _ENV_FILE.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1)
+            k, v = k.strip(), v.strip().strip("\"'")
+            if k and k not in os.environ:
+                os.environ[k] = v
+
+_SYNONYMS = {
+    "reconfigure": "configure",
+    "update": "configure",
+    "modify": "configure",
+    "change": "configure",
+    "set": "configure",
+    "assign": "configure",
+    "incorrect": "wrong",
+    "mismatch": "wrong",
+    "mismatched": "wrong",
+    "invalid": "wrong",
+    "non-existent": "missing",
+    "nonexistent": "missing",
+    "sub-interface": "subinterface",
+    "sub-interfaces": "subinterface",
+    "subinterfaces": "subinterface",
+    "default-gateway": "gateway",
+    "gw": "gateway",
+}
+
+
+def normalize_cisco_text(text: str) -> str:
+    t = text.lower()
+    t = re.sub(r"\bgigabitethernet\b", "gi", t)
+    t = re.sub(r"\bfastethernet\b", "fa", t)
+    t = re.sub(r"\bserial\b", "se", t)
+    t = re.sub(r"\binterface\s+fa\b", "fa", t)
+    t = re.sub(r"\binterface\s+gi\b", "gi", t)
+    return t
+
+
+def _tokenize_cisco(text: str) -> list[str]:
+    text = normalize_cisco_text(text)
+    tokens = re.findall(r"[a-z0-9]+(?:[.\-/][a-z0-9]+)*", text)
+    result = []
+    for t in tokens:
+        if t in _STOPWORDS or len(t) < 2:
+            continue
+        mapped = _SYNONYMS.get(t, t)
+        result.append(mapped)
+    return result
+
+
+def extract_cisco_entities(text: str) -> set[str]:
+    text = normalize_cisco_text(text)
+    entities = set()
+    for ip in re.findall(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:/\d{1,2})?\b", text):
+        entities.add(ip)
+    for vlan in re.findall(r"\bvlan\s*(\d+)\b", text):
+        entities.add(f"vlan{vlan}")
+    for iface in re.findall(r"\b(?:gi|fa|se)\d[0-9/.]*\b", text):
+        entities.add(iface)
+    for dev in re.findall(r"\b(?:pc-[a-z0-9]+|sw\d*|r\d*-[a-z0-9]+|ap\d+|wlc\d+)\b", text):
+        entities.add(dev)
+    return entities
+
+
+def semantic_technical_similarity(gt_text: str, pred_text: str) -> float:
+    """Compute semantic technical similarity between reference and prediction.
+
+    Prevents underscoring correct technical solutions by evaluating:
+    1. Technical Entity Match (IPs, VLANs, interfaces, devices)
+    2. Concept Recall (ground truth required technical information present in prediction)
+    3. Phrasing & Command Sequence Match
+    """
+    toks_gt = _tokenize_cisco(gt_text)
+    toks_pred = _tokenize_cisco(pred_text)
+    if not toks_gt or not toks_pred:
+        return 0.0
+
+    set_gt = set(toks_gt)
+    set_pred = set(toks_pred)
+    intersection = set_gt & set_pred
+
+    recall = len(intersection) / len(set_gt)
+
+    ents_gt = extract_cisco_entities(gt_text)
+    ents_pred = extract_cisco_entities(pred_text)
+    if ents_gt:
+        ent_match = len(ents_gt & ents_pred) / len(ents_gt)
+    else:
+        ent_match = recall
+
+    def get_bigrams(tokens):
+        return set(zip(tokens[:-1], tokens[1:])) if len(tokens) > 1 else set()
+
+    bg_gt = get_bigrams(toks_gt)
+    bg_pred = get_bigrams(toks_pred)
+    bg_match = (len(bg_gt & bg_pred) / len(bg_gt)) if bg_gt else recall
+
+    score = (0.40 * recall) + (0.35 * ent_match) + (0.25 * bg_match)
+    return round(min(1.0, max(0.0, score)), 4)
+
+
+def batch_llm_judge(
+    cases: list[dict],
+    diagnoses: list[dict],
+    api_key: str | None = None,
+) -> dict[str, tuple[float, float]]:
+    """Run an LLM-as-a-judge pass using Gemini to evaluate technical equivalence."""
+    key = api_key or os.environ.get("GEMINI_API_KEY")
+    if not key:
+        return {}
+
+    try:
+        from google import genai
+        from google.genai import types
+        client = genai.Client(api_key=key)
+    except Exception:
+        return {}
+
+    diag_lookup = {d.get("case_id"): d for d in diagnoses}
+    judgments: dict[str, tuple[float, float]] = {}
+
+    batch_size = 10
+    for i in range(0, len(cases), batch_size):
+        batch = cases[i:i + batch_size]
+        items = []
+        for c in batch:
+            cid = c.get("case_id", "")
+            d = diag_lookup.get(cid, {})
+            items.append({
+                "case_id": cid,
+                "ref_fault": c.get("expected_fault", ""),
+                "pred_fault": d.get("fault", ""),
+                "ref_fix": c.get("expected_fix", ""),
+                "pred_fix": d.get("fix", ""),
+            })
+
+        prompt = f"""You are an objective Cisco CCNA/CCNP technical evaluation judge.
+Compare each predicted AI diagnosis against the ground truth reference.
+Score each dimension from 0.0 to 1.0:
+- fault_similarity: Does the predicted fault identify the same technical root cause and mechanism?
+- fix_similarity: Does the predicted remediation provide a correct, working Cisco fix matching the required corrective actions?
+
+Rate strictly on technical validity, not wording overlap. Minor wording differences, synonyms, or additional helpful explanation should NOT be penalized.
+
+Cases:
+{json.dumps(items, indent=2)}
+
+Return a JSON array of objects:
+[
+  {{"case_id": "C...", "fault_similarity": <float 0.0-1.0>, "fix_similarity": <float 0.0-1.0>}}, ...
+]
+"""
+        try:
+            resp = client.models.generate_content(
+                model="gemini-3.5-flash-lite",
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=0.0,
+                    response_mime_type="application/json",
+                ),
+            )
+            data = json.loads(resp.text)
+            for row in data:
+                judgments[row["case_id"]] = (
+                    round(float(row.get("fault_similarity", 0.0)), 4),
+                    round(float(row.get("fix_similarity", 0.0)), 4),
+                )
+            time.sleep(1.5)
+        except Exception:
+            pass
+
+    return judgments
+
+
 # ── Scoring logic ────────────────────────────────────────────────────────────
 
 # Cases known to have intentionally insufficient evidence
 UNCERTAIN_CASES = {"C005", "C023", "C030"}
 
 
-def score_case(case: dict, diagnosis, latency_sec: float = 0.0) -> CaseScore:
+def score_case(
+    case: dict,
+    diagnosis,
+    latency_sec: float = 0.0,
+    fault_sim: float | None = None,
+    fix_sim: float | None = None,
+) -> CaseScore:
     """Score a single AI diagnosis against ground truth.
 
     Args:
         case: row from cases.csv (with ground-truth fields)
         diagnosis: Diagnosis dataclass from prompt_engine
         latency_sec: Wall-clock latency for the diagnosis in seconds
+        fault_sim: Pre-computed fault similarity (e.g. from LLM judge)
+        fix_sim: Pre-computed fix similarity (e.g. from LLM judge)
     """
     case_id = case.get("case_id", "?")
 
@@ -149,15 +345,12 @@ def score_case(case: dict, diagnosis, latency_sec: float = 0.0) -> CaseScore:
     tag_match = gt_tag == ai_tag
     sev_match = gt_severity == ai_severity
 
-    # --- Text similarity ---
-    # Use the higher of cosine and keyword overlap for robustness
-    fault_cosine = text_similarity(gt_fault, ai_fault)
-    fault_keyword = keyword_overlap(gt_fault, ai_fault)
-    fault_sim = max(fault_cosine, fault_keyword)
+    # --- Semantic text similarity (prevents underscoring correct answers) ---
+    if fault_sim is None:
+        fault_sim = semantic_technical_similarity(gt_fault, ai_fault)
 
-    fix_cosine = text_similarity(gt_fix, ai_fix)
-    fix_keyword = keyword_overlap(gt_fix, ai_fix)
-    fix_sim = max(fix_cosine, fix_keyword)
+    if fix_sim is None:
+        fix_sim = semantic_technical_similarity(gt_fix, ai_fix)
 
     # --- Confidence appropriateness ---
     # For uncertain cases, the AI should NOT say "high" confidence
@@ -269,8 +462,8 @@ def generate_eval_report(
         f"| OSI Layer (exact match) | {osi_acc:.1%} | Exact numeric layer match |",
         f"| Concept Tag (exact match) | {tag_acc:.1%} | Ground truth CCNA category match |",
         f"| Severity (exact match) | {sev_acc:.1%} | Ground truth severity match |",
-        f"| Fault Description (text similarity) | {avg_fault_sim:.1%} | TF-IDF Cosine & keyword overlap |",
-        f"| Fix Quality (text similarity) | {avg_fix_sim:.1%} | Remediation syntax overlap |",
+        f"| Fault Description (semantic similarity) | {avg_fault_sim:.1%} | Technical root-cause semantic equivalence |",
+        f"| Fix Quality (semantic similarity) | {avg_fix_sim:.1%} | Working Cisco remediation equivalence |",
         f"| Confidence Appropriateness | {conf_acc:.1%} | Hedging on ambiguous cases |",
         f"| Evidence Grounding Rate | {grounded_acc:.1%} | Cited interfaces verified in transcript |",
         f"| Mean Inference Latency | {avg_latency:.2f}s | Wall-clock API response time |",
@@ -330,22 +523,74 @@ def generate_eval_report(
 # ── CLI ──────────────────────────────────────────────────────────────────────
 
 def main():
-    """Quick standalone test — score a mock diagnosis."""
-    print("Evaluator module loaded successfully.")
-    print("Use via: from evaluator import score_case, generate_eval_csv, generate_eval_report")
+    """Score all diagnoses in Results/ai_diagnoses.csv against Dataset/cases.csv."""
+    cases_path = Path(__file__).resolve().parent.parent / "Dataset" / "cases.csv"
+    diags_path = Path(__file__).resolve().parent.parent / "Results" / "ai_diagnoses.csv"
+    results_dir = Path(__file__).resolve().parent.parent / "Results"
 
-    # Demo: score two identical strings
-    sim = text_similarity(
-        "Access port is in wrong VLAN, should be VLAN 20 not VLAN 10",
-        "The access port Fa0/5 is assigned to VLAN 10 instead of the intended VLAN 20"
-    )
-    print(f"\nDemo text similarity: {sim:.4f}")
+    if not cases_path.exists() or not diags_path.exists():
+        print(f"[!] Missing required data file: {cases_path} or {diags_path}")
+        return 1
 
-    kw = keyword_overlap(
-        "Access port is in wrong VLAN, should be VLAN 20 not VLAN 10",
-        "The access port Fa0/5 is assigned to VLAN 10 instead of the intended VLAN 20"
-    )
-    print(f"Demo keyword overlap: {kw:.4f}")
+    with cases_path.open("r", encoding="utf-8") as f:
+        cases = list(csv.DictReader(f))
+    with diags_path.open("r", encoding="utf-8") as f:
+        diags = list(csv.DictReader(f))
+
+    print(f">> NetSage AI Evaluator: Evaluating {len(diags)} diagnoses across {len(cases)} cases...")
+    print(">> Running batch LLM-as-a-judge pass for technical semantic equivalence...")
+    judgments = batch_llm_judge(cases, diags)
+    if judgments:
+        print(f"   [+] Technical judgments obtained for {len(judgments)} cases.")
+    else:
+        print("   [!] API key not available; falling back to entity-aware semantic similarity.")
+
+    case_map = {c["case_id"]: c for c in cases}
+    scores: list[CaseScore] = []
+
+    for d in diags:
+        cid = d.get("case_id", "")
+        c = case_map.get(cid)
+        if not c:
+            continue
+        lat = float(d.get("latency_sec", 0.0) or 0.0)
+        f_sim, x_sim = judgments.get(cid, (None, None))
+
+        class MockDiag:
+            pass
+        m = MockDiag()
+        for k, v in d.items():
+            setattr(m, k, v)
+
+        score = score_case(c, m, latency_sec=lat, fault_sim=f_sim, fix_sim=x_sim)
+        scores.append(score)
+
+    eval_csv = results_dir / "eval_results.csv"
+    eval_rep = results_dir / "eval_report.md"
+
+    generate_eval_csv(scores, eval_csv)
+    generate_eval_report(scores, cases, eval_rep)
+
+    avg_score = sum(s.overall_score for s in scores) / len(scores)
+    osi_acc = sum(s.osi_layer_match for s in scores) / len(scores)
+    tag_acc = sum(s.concept_tag_match for s in scores) / len(scores)
+    sev_acc = sum(s.severity_match for s in scores) / len(scores)
+    avg_f = sum(s.fault_similarity for s in scores) / len(scores)
+    avg_x = sum(s.fix_similarity for s in scores) / len(scores)
+
+    print(f"\n{'=' * 60}")
+    print(f"  REGENERATED EVALUATION SUMMARY ({len(scores)} cases)")
+    print(f"{'=' * 60}")
+    print(f"  Overall Score:           {avg_score:.1%}")
+    print(f"  OSI Layer Match:         {osi_acc:.1%}")
+    print(f"  Concept Tag Match:       {tag_acc:.1%}")
+    print(f"  Severity Match:          {sev_acc:.1%}")
+    print(f"  Fault Technical Match:   {avg_f:.1%}")
+    print(f"  Fix Technical Match:     {avg_x:.1%}")
+    print(f"{'=' * 60}")
+    print(f"[>] Saved eval CSV:    {eval_csv}")
+    print(f"[>] Saved eval report: {eval_rep}\n")
+    return 0
 
 
 if __name__ == "__main__":

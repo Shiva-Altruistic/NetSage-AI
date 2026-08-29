@@ -73,3 +73,6 @@ timestamp,case_id,model_name,prompt_version,is_uncertain_case,ai_confidence,conf
 2026-08-29T18:53:37.007492+00:00,C005,gemini-3.5-flash-lite,V2,True,medium,True,0,0,,0,,Low,None,True,All cited network interfaces grounded in supplied case evidence.,Pending,,0.0
 2026-08-29T18:53:37.008860+00:00,C023,gemini-3.5-flash-lite,V2,True,medium,True,1,0,,0,,Low,None,True,All cited network interfaces grounded in supplied case evidence.,Pending,,0.0
 2026-08-29T18:53:37.009746+00:00,C030,gemini-3.5-flash-lite,V2,True,medium,True,0,0,,0,,Low,None,True,All cited network interfaces grounded in supplied case evidence.,Pending,,0.0
+2026-08-29T19:13:12.872630+00:00,C005,gemini-3.5-flash-lite,V2,True,medium,True,0,0,,0,,Low,None,True,All cited network interfaces grounded in supplied case evidence.,Pending,,0.0
+2026-08-29T19:13:12.877982+00:00,C023,gemini-3.5-flash-lite,V2,True,medium,True,1,0,,0,,Low,None,True,All cited network interfaces grounded in supplied case evidence.,Pending,,0.0
+2026-08-29T19:13:12.880911+00:00,C030,gemini-3.5-flash-lite,V2,True,medium,True,0,0,,0,,Low,None,True,All cited network interfaces grounded in supplied case evidence.,Pending,,0.0

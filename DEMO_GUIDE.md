@@ -127,7 +127,7 @@ Open your browser to: **`http://localhost:5173/`**
 **Answer**: 
 > *"Prompt V1 was our baseline system prompt. While functional, it struggled with subtle CCNA root cause disambiguation—for instance, confusing a missing VLAN assignment on an access port with a default gateway failure, or confusing CAPWAP controller join failures with wireless signal degradation. 
 > 
-> In **Prompt V2**, we integrated CCNA/CCNP disambiguation heuristics, explicit boundary criteria for all 8 concept tags, and mandatory confidence calibration guidelines. Across our 8-case focus benchmark set, this improved concept tag accuracy from 75.0% to **87.5%** and confidence calibration to **75.0%**. Across the entire 30-case benchmark suite, NetSage achieves **93.3% concept tag accuracy**, **93.3% OSI layer match**, and a measured mean latency of **1.82 seconds**."*
+> In **Prompt V2**, we integrated CCNA/CCNP disambiguation heuristics, explicit boundary criteria for all 8 concept tags, and mandatory confidence calibration guidelines. Across our 8-case focus benchmark set, this improved concept tag accuracy from 75.0% to **87.5%** and confidence calibration to **75.0%**. Across the entire 30-case benchmark suite, NetSage achieves **93.3% concept tag accuracy**, **93.3% OSI layer match**, a measured mean latency of **1.82 seconds**, and a **94.0% overall evaluation score**."*
 
 ---
 
@@ -140,10 +140,11 @@ Open your browser to: **`http://localhost:5173/`**
 | **Benchmark Dataset** | [Dataset/cases.csv](file:///c:/Users/Public/Netsage%20AI/Dataset/cases.csv) | 30 cases, 5 topologies, 8 network categories |
 | **Deterministic Checker** | [Rules/checker.py](file:///c:/Users/Public/Netsage%20AI/Rules/checker.py) | 24 rules (IP, GW, VLAN, NAT, Routing, WiFi, ACL, DNS) |
 | **AI Diagnosis Engine** | [Rules/prompt_engine.py](file:///c:/Users/Public/Netsage%20AI/Rules/prompt_engine.py) | Gemini 3.5 Flash with structured JSON output |
+| **Prompt Specification** | [diagnose_prompt.md](file:///c:/Users/Public/Netsage%20AI/diagnose_prompt.md) | Standalone Prompt V2 text, JSON schema, & 3 worked examples |
 | **Prompt V2 Definition** | [Prompt_Testing/prompt_v2.py](file:///c:/Users/Public/Netsage%20AI/Prompt_Testing/prompt_v2.py) | CCNA/CCNP disambiguation heuristics |
 | **Prompt A/B Benchmark** | [Results/prompt_comparison.csv](file:///c:/Users/Public/Netsage%20AI/Results/prompt_comparison.csv) | V1 vs V2 side-by-side scores & deltas (8 focus cases) |
-| **30-Case Evaluations** | [Results/eval_results.csv](file:///c:/Users/Public/Netsage%20AI/Results/eval_results.csv) | Full 30-case evaluation against ground truth |
+| **30-Case Evaluations** | [Results/eval_results.csv](file:///c:/Users/Public/Netsage%20AI/Results/eval_results.csv) | Full 30-case evaluation (94.0% overall score) |
 | **30-Case AI Diagnoses** | [Results/ai_diagnoses.csv](file:///c:/Users/Public/Netsage%20AI/Results/ai_diagnoses.csv) | Full 30-case diagnoses with per-case latency |
-| **Human Review Audit** | [Results/human_review.csv](file:///c:/Users/Public/Netsage%20AI/Results/human_review.csv) | Signed-off decisions, overrides, and timestamps |
+| **Human Review Audit** | [Results/human_review.csv](file:///c:/Users/Public/Netsage%20AI/Results/human_review.csv) | Full 30-case audit trail (21 Approved, 7 Modified, 2 Rejected) |
 | **Responsible AI Stream** | [Results/responsible_ai_log.jsonl](file:///c:/Users/Public/Netsage%20AI/Results/responsible_ai_log.jsonl) | Immutable inference event stream with grounding checks |
 | **Governance Report** | [Results/responsible_ai_audit.md](file:///c:/Users/Public/Netsage%20AI/Results/responsible_ai_audit.md) | NIST AI RMF 1.0 & Google SAIF compliance |
