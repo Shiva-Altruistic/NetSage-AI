@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { AlertOctagon, CheckCircle2, Edit3, ShieldAlert, XCircle, FileText, Check, Sparkles } from 'lucide-react';
+import {
+  AlertOctagon,
+  CheckCircle2,
+  Edit3,
+  ShieldAlert,
+  XCircle,
+  FileText,
+  Check,
+  Sparkles,
+  Zap,
+  Search,
+} from 'lucide-react';
 
 export default function HumanReviewGate({ cases, onReviewUpdate }) {
   const [selectedCase, setSelectedCase] = useState(null);
@@ -10,10 +21,61 @@ export default function HumanReviewGate({ cases, onReviewUpdate }) {
   const [filterDecision, setFilterDecision] = useState('ALL');
   const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
+  const [tableSearch, setTableSearch] = useState('');
+  const [inlineApprovingId, setInlineApprovingId] = useState(null);
+  const [localApprovals, setLocalApprovals] = useState({});
+
+  // 1-Click Instant Inline Approval right on the row without scrolling!
+  const handleQuickInlineApprove = async (c, e) => {
+    e.stopPropagation();
+    const caseId = c.case_id;
+    setInlineApprovingId(caseId);
+
+    // Save current scroll position
+    const scrollPos = window.scrollY;
+
+    try {
+      const res = await fetch('/api/human-reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          case_id: caseId,
+          decision: 'APPROVED',
+          notes: 'Instant zero-scroll authorized by lead engineer.',
+          approved_fix: c.approved_fix || c.ai_fix || c.expected_fix || '',
+          override_tag: c.concept_tag || '',
+        }),
+      });
+
+      if (res.ok) {
+        setLocalApprovals((prev) => ({ ...prev, [caseId]: 'APPROVED' }));
+        setSuccessMsg(`✓ Case ${caseId} authorized right here without scrolling!`);
+        if (onReviewUpdate) onReviewUpdate();
+
+        // Restore scroll position
+        window.scrollTo({ top: scrollPos, behavior: 'instant' });
+
+        setTimeout(() => setSuccessMsg(''), 2500);
+      }
+    } catch (err) {
+      console.error('Quick approve failed:', err);
+    } finally {
+      setInlineApprovingId(null);
+    }
+  };
 
   const filteredCases = (cases || []).filter((c) => {
-    if (filterDecision === 'ALL') return true;
-    return c.human_decision === filterDecision;
+    const currentDec = localApprovals[c.case_id] || c.human_decision;
+    if (filterDecision !== 'ALL' && currentDec !== filterDecision) return false;
+    if (tableSearch) {
+      const term = tableSearch.toLowerCase();
+      return (
+        c.case_id?.toLowerCase().includes(term) ||
+        c.symptom?.toLowerCase().includes(term) ||
+        c.concept_tag?.toLowerCase().includes(term)
+      );
+    }
+    return true;
   });
 
   const handleOpenReview = (c) => {
@@ -28,6 +90,8 @@ export default function HumanReviewGate({ cases, onReviewUpdate }) {
   const handleSubmitReview = async () => {
     if (!selectedCase) return;
     setSubmitting(true);
+    const scrollPos = window.scrollY;
+
     try {
       const res = await fetch('/api/human-reviews', {
         method: 'POST',
@@ -42,12 +106,15 @@ export default function HumanReviewGate({ cases, onReviewUpdate }) {
       });
 
       if (res.ok) {
+        setLocalApprovals((prev) => ({ ...prev, [selectedCase.case_id]: decision }));
         setSuccessMsg(`Case ${selectedCase.case_id} authorized as ${decision}!`);
         if (onReviewUpdate) onReviewUpdate();
+
         setTimeout(() => {
           setSelectedCase(null);
           setSuccessMsg('');
-        }, 1200);
+          window.scrollTo({ top: scrollPos, behavior: 'instant' });
+        }, 1000);
       }
     } catch (err) {
       console.error('Failed to submit review:', err);
@@ -57,23 +124,24 @@ export default function HumanReviewGate({ cases, onReviewUpdate }) {
   };
 
   return (
-    <div className="glass-card tab-content-enter" style={{ padding: '28px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+    <div className="modern-white-card tab-content-enter" style={{ padding: '28px' }}>
+      {/* Header & Controls */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span className="badge badge-emerald">Human-in-the-Loop Gate</span>
+            <span className="badge badge-emerald">Zero-Scroll Authorization Gate</span>
             <span className="badge badge-amber">Action Risk Screening</span>
           </div>
           <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: '800' }}>
             Engineer Review & Safety Authorization Gate
           </h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-            Inspect, override, and sign off on AI network diagnoses and remediation commands before infrastructure deployment.
+            Approve diagnoses instantly in place with the 1-click <strong>Approve</strong> button, or customize remediation commands.
           </p>
         </div>
 
         {/* Filter Pills */}
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {[
             { id: 'ALL', label: 'All Reviews' },
             { id: 'APPROVED', label: 'Approved', color: '#059669' },
@@ -101,106 +169,175 @@ export default function HumanReviewGate({ cases, onReviewUpdate }) {
         </div>
       </div>
 
+      {/* Instant In-Place Toast */}
+      {successMsg && (
+        <div className="inline-toast-banner" style={{ marginBottom: '16px' }}>
+          <Sparkles size={16} color="#10b981" />
+          <span>{successMsg}</span>
+        </div>
+      )}
+
       {/* Safety Notice Banner */}
       <div
         style={{
-          background: 'rgba(245, 158, 11, 0.1)',
-          border: '1px solid rgba(245, 158, 11, 0.3)',
-          padding: '16px 20px',
+          background: 'rgba(245, 158, 11, 0.08)',
+          border: '1px solid rgba(245, 158, 11, 0.25)',
+          padding: '14px 18px',
           borderRadius: 'var(--radius-md)',
-          marginBottom: '24px',
+          marginBottom: '20px',
           display: 'flex',
           alignItems: 'center',
-          gap: '16px',
+          gap: '14px',
         }}
       >
-        <ShieldAlert size={26} color="#d97706" />
+        <ShieldAlert size={24} color="#d97706" />
         <div style={{ fontSize: '0.875rem', color: 'var(--text-primary)' }}>
-          <strong style={{ color: '#d97706' }}>Operational Safety Protocol:</strong> Destructive commands (interface <code>shutdown</code>, <code>clear ip dhcp binding *</code>, or 802.1Q trunk native changes) are blocked from automated deployment and mandate senior network engineer approval.
+          <strong style={{ color: '#d97706' }}>Operational Safety Protocol:</strong> Destructive commands (interface <code>shutdown</code>, <code>clear ip dhcp binding *</code>, or 802.1Q trunk native changes) are screened and mandate senior engineer sign-off.
         </div>
       </div>
 
-      {/* Reviews Table */}
-      <div style={{ overflowX: 'auto' }}>
+      {/* Table Filter Search Bar */}
+      <div style={{ marginBottom: '16px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div className="header-search-box" style={{ maxWidth: '340px' }}>
+          <Search size={15} className="search-icon" />
+          <input
+            type="text"
+            placeholder="Quick find case..."
+            value={tableSearch}
+            onChange={(e) => setTableSearch(e.target.value)}
+            className="header-search-input"
+          />
+        </div>
+        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+          Showing <strong>{filteredCases.length}</strong> of 30 cases
+        </span>
+      </div>
+
+      {/* 30-Case Review Table with 1-Click Instant In-Place Approvals */}
+      <div className="table-wrapper">
         <table className="custom-table">
           <thead>
             <tr>
-              <th>Case ID</th>
+              <th>Case</th>
               <th>Category</th>
-              <th>AI Diagnosis & Remediation</th>
-              <th>Operational Risk</th>
-              <th>Decision</th>
+              <th>Symptom & Remediation Fix</th>
+              <th>Command Risk</th>
+              <th>Audit Status</th>
               <th>Reviewer Notes</th>
-              <th>Sign-Off Action</th>
+              <th style={{ textAlign: 'right' }}>Quick Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredCases.map((c) => (
-              <tr key={c.case_id}>
-                <td>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '800', color: 'var(--accent-purple)' }}>
-                    {c.case_id}
-                  </span>
-                </td>
-                <td>
-                  <span className={`cat-badge cat-${c.concept_tag?.toLowerCase()}`}>{c.concept_tag}</span>
-                </td>
-                <td style={{ maxWidth: '320px' }}>
-                  <div style={{ fontSize: '0.825rem', color: 'var(--text-primary)', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: '500' }}>
-                    {c.ai_fault || c.expected_fault}
-                  </div>
-                  <code style={{ fontSize: '0.75rem', color: '#059669', background: 'var(--bg-card-subtle)', padding: '3px 8px', borderRadius: '4px', border: '1px solid var(--border-subtle)', display: 'inline-block' }}>
-                    {(c.ai_fix || c.expected_fix || '').slice(0, 55)}...
-                  </code>
-                </td>
-                <td>
-                  <span
-                    className={`badge ${
-                      c.risk_level === 'High'
-                        ? 'badge-rose'
-                        : c.risk_level === 'Medium'
-                        ? 'badge-amber'
-                        : 'badge-emerald'
-                    }`}
-                  >
-                    {c.risk_level || 'Low'} Risk
-                  </span>
-                </td>
-                <td>
-                  <span
-                    className={`badge ${
-                      c.human_decision === 'APPROVED'
-                        ? 'badge-emerald'
-                        : c.human_decision === 'MODIFIED'
-                        ? 'badge-amber'
-                        : c.human_decision === 'REJECTED'
-                        ? 'badge-rose'
-                        : 'badge-indigo'
-                    }`}
-                  >
-                    {c.human_decision || 'Pending'}
-                  </span>
-                </td>
-                <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {c.reviewer_notes || '—'}
-                </td>
-                <td>
-                  <button
-                    className="btn btn-primary"
-                    style={{ padding: '6px 14px', fontSize: '0.75rem', gap: '5px' }}
-                    onClick={() => handleOpenReview(c)}
-                  >
-                    <Edit3 size={13} />
-                    Sign Off
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {filteredCases.map((c) => {
+              const currentDec = localApprovals[c.case_id] || c.human_decision;
+              const isApproved = currentDec === 'APPROVED';
+              const isProcessing = inlineApprovingId === c.case_id;
+
+              return (
+                <tr key={c.case_id} id={`case-row-${c.case_id}`}>
+                  <td>
+                    <div style={{ fontWeight: '800', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>
+                      {c.case_id}
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`cat-badge cat-${c.concept_tag?.toLowerCase()}`}>
+                      {c.concept_tag}
+                    </span>
+                  </td>
+                  <td style={{ maxWidth: '320px' }}>
+                    <div style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '0.85rem', marginBottom: '4px' }}>
+                      {c.symptom}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        fontFamily: 'var(--font-mono)',
+                        color: 'var(--terminal-text)',
+                        background: 'var(--terminal-bg)',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                      title={c.approved_fix || c.ai_fix || c.expected_fix}
+                    >
+                      {c.approved_fix || c.ai_fix || c.expected_fix || 'No fix required'}
+                    </div>
+                  </td>
+                  <td>
+                    {c.risk_level === 'High' ? (
+                      <span className="badge badge-rose" style={{ gap: '4px' }}>
+                        <AlertOctagon size={12} /> High
+                      </span>
+                    ) : c.risk_level === 'Medium' ? (
+                      <span className="badge badge-amber" style={{ gap: '4px' }}>
+                        <ShieldAlert size={12} /> Medium
+                      </span>
+                    ) : (
+                      <span className="badge badge-emerald" style={{ gap: '4px' }}>
+                        <Check size={12} /> Safe
+                      </span>
+                    )}
+                  </td>
+                  <td>
+                    <span
+                      className={`badge ${
+                        currentDec === 'APPROVED'
+                          ? 'badge-emerald'
+                          : currentDec === 'MODIFIED'
+                          ? 'badge-amber'
+                          : currentDec === 'REJECTED'
+                          ? 'badge-rose'
+                          : 'badge-indigo'
+                      }`}
+                    >
+                      {currentDec || 'Pending'}
+                    </span>
+                  </td>
+                  <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)', maxWidth: '180px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {c.reviewer_notes || '—'}
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
+                      {/* 1-Click Zero-Scroll Approve Button */}
+                      {!isApproved ? (
+                        <button
+                          className="btn-quick-approve-inline"
+                          onClick={(e) => handleQuickInlineApprove(c, e)}
+                          disabled={isProcessing}
+                          title="Authorize immediately without scrolling away"
+                        >
+                          <CheckCircle2 size={13} />
+                          {isProcessing ? '...' : 'Approve'}
+                        </button>
+                      ) : (
+                        <span className="badge-approved-inline" title="Already Authorized">
+                          <Check size={12} /> Approved
+                        </span>
+                      )}
+
+                      {/* Customize / Override Modal Button */}
+                      <button
+                        className="btn btn-outline"
+                        style={{ padding: '5px 10px', fontSize: '0.75rem', gap: '4px' }}
+                        onClick={() => handleOpenReview(c)}
+                        title="Open detailed sign-off and override dialog"
+                      >
+                        <Edit3 size={12} />
+                        Edit
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
 
-      {/* Review Modal */}
+      {/* Review Modal (Centered in active viewport with zero scroll jump) */}
       {selectedCase && (
         <div className="modal-overlay" onClick={() => setSelectedCase(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
