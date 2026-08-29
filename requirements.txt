@@ -1,0 +1,7 @@
+# NetSage AI — Python Dependencies
+# Core AI Inference & API Client
+google-genai>=2.20.0
+
+# Environment Variable & Schema Support (Optional / Stdlib fallback provided)
+python-dotenv>=1.0.0
+pydantic>=2.0.0

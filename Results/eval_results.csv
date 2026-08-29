@@ -1,0 +1,2 @@
+case_id,osi_layer_match,concept_tag_match,severity_match,fault_similarity,fix_similarity,confidence_appropriate,overall_score
+C001,1,1,1,0.597,0.6585,1,0.8108

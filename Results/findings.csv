@@ -1,0 +1,571 @@
+case_id,rule_id,status,message,evidence,confidence
+C001,IPCFG-005,FAIL,Host 1 default gateway 10.10.20.1 is outside the host subnet 10.10.10.0/24.,"IP=10.10.10.45, Mask=255.255.255.0, Gateway=10.10.20.1",High
+C001,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C001,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C001,GW-001,NOT_APPLICABLE,No router interface IPs were available for gateway comparison.,,High
+C001,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C001,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C001,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C001,VLAN-001,FAIL,"Access access port is in VLAN 10, but case context indicates VLAN 20.",Access Mode VLAN: 10; intended VLAN: 20,High
+C001,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C001,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C001,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C001,ROUTE-001,PASS,No deterministic missing-route signature was found in the supplied route evidence.,Route output does not show the empty/no-neighbor signatures used by this rule.,Medium
+C001,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C001,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C001,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C001,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C001,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C001,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C001,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C002,IPCFG-006,PASS,Host 1 IP/mask/gateway are internally consistent at the subnet level.,"IP=10.10.10.52, Mask=255.255.255.0, Gateway=10.10.10.254",High
+C002,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C002,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C002,GW-001,FAIL,Observed gateway 10.10.10.254 does not match any supplied router interface IP in the host subnet.,"Host subnet=10.10.10.0/24; gateway=10.10.10.254; router IPs=['10.10.10.1', '10.10.20.1', '10.10.99.1']",High
+C002,VLAN-002,NOT_APPLICABLE,No 'show vlan brief' output available for VLAN-presence validation.,,High
+C002,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C002,IF-001,PASS,No administratively-down/down interface was found in the supplied summary.,All parsed interfaces are operational.,High
+C002,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C002,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C002,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C002,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C002,ROUTE-001,PASS,No deterministic missing-route signature was found in the supplied route evidence.,Route output does not show the empty/no-neighbor signatures used by this rule.,Medium
+C002,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C002,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C002,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C002,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C002,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C002,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C002,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C003,IPCFG-006,PASS,Host 1 IP/mask/gateway are internally consistent at the subnet level.,"IP=169.254.34.12, Mask=255.255.0.0, Gateway=0.0.0.0",High
+C003,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C003,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C003,GW-001,NOT_APPLICABLE,No router interface IPs were available for gateway comparison.,,High
+C003,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C003,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C003,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C003,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C003,DHCP-001,FAIL,At least one DHCP pool is exhausted.,"total=254, leased=254",High
+C003,DHCP-002,WARNING,"DHCP-related symptom detected, but no interface configuration block was supplied.",No ip helper-address evidence available.,Medium
+C003,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C003,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C003,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C003,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C003,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C003,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C003,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C003,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C003,DNS-001,WARNING,"DNS evidence is present, but this checker cannot fully validate record correctness without a DNS zone/database view.",DNS/lookup evidence supplied,Medium
+C004,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C004,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C004,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C004,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C004,VLAN-002,NOT_APPLICABLE,No 'show vlan brief' output available for VLAN-presence validation.,,High
+C004,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C004,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C004,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C004,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C004,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C004,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C004,ROUTE-001,PASS,No deterministic missing-route signature was found in the supplied route evidence.,Route output does not show the empty/no-neighbor signatures used by this rule.,Medium
+C004,ACL-001,WARNING,ACL deny entries exist; deterministic checker cannot prove whether they block the affected flow without full traffic context.,10 deny ip 10.10.20.0 0.0.0.255 any,Medium
+C004,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C004,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C004,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C004,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C004,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C004,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C005,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C005,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C005,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C005,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C005,VLAN-002,NOT_APPLICABLE,No 'show vlan brief' output available for VLAN-presence validation.,,High
+C005,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C005,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C005,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C005,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C005,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C005,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C005,ROUTE-001,PASS,No deterministic missing-route signature was found in the supplied route evidence.,Route output does not show the empty/no-neighbor signatures used by this rule.,Medium
+C005,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C005,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C005,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C005,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C005,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C005,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C005,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C006,IPCFG-005,FAIL,Host 1 default gateway 10.10.20.1 is outside the host subnet 10.10.10.0/24.,"IP=10.10.10.88, Mask=255.255.255.0, Gateway=10.10.20.1",High
+C006,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C006,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C006,GW-001,NOT_APPLICABLE,No router interface IPs were available for gateway comparison.,,High
+C006,VLAN-002,NOT_APPLICABLE,No 'show vlan brief' output available for VLAN-presence validation.,,High
+C006,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C006,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C006,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C006,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C006,DHCP-002,WARNING,"DHCP-related symptom detected, but no interface configuration block was supplied.",No ip helper-address evidence available.,Medium
+C006,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C006,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C006,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C006,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C006,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C006,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C006,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C006,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C006,DNS-001,WARNING,"DNS evidence is present, but this checker cannot fully validate record correctness without a DNS zone/database view.",DNS/lookup evidence supplied,Medium
+C007,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C007,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C007,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C007,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C007,VLAN-002,NOT_APPLICABLE,No 'show vlan brief' output available for VLAN-presence validation.,,High
+C007,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C007,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C007,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C007,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C007,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C007,TRUNK-001,FAIL,Referenced VLAN(s) [40] are not in the trunk allowed list.,"Allowed=[1, 10, 20, 30]; referenced=[30, 40]",High
+C007,ROUTE-001,PASS,No deterministic missing-route signature was found in the supplied route evidence.,Route output does not show the empty/no-neighbor signatures used by this rule.,Medium
+C007,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C007,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C007,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C007,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C007,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C007,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C007,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C008,IPCFG-006,PASS,Host 1 IP/mask/gateway are internally consistent at the subnet level.,"IP=169.254.12.9, Mask=255.255.0.0, Gateway=0.0.0.0",High
+C008,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C008,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C008,GW-001,NOT_APPLICABLE,No router interface IPs were available for gateway comparison.,,High
+C008,VLAN-002,NOT_APPLICABLE,No 'show vlan brief' output available for VLAN-presence validation.,,High
+C008,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C008,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C008,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C008,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C008,DHCP-002,PASS,No deterministic missing-helper condition was established from the supplied evidence.,Helper configuration evidence is present or case is not a relay case.,Medium
+C008,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C008,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C008,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C008,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C008,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C008,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C008,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C008,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C008,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C009,IPCFG-006,PASS,Host 1 IP/mask/gateway are internally consistent at the subnet level.,"IP=172.16.30.55, Mask=255.255.255.0, Gateway=172.16.30.1",High
+C009,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C009,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C009,GW-001,NOT_APPLICABLE,No router interface IPs were available for gateway comparison.,,High
+C009,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C009,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C009,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C009,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C009,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C009,DHCP-002,WARNING,"DHCP-related symptom detected, but no interface configuration block was supplied.",No ip helper-address evidence available.,Medium
+C009,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C009,ROUTE-001,PASS,No deterministic missing-route signature was found in the supplied route evidence.,Route output does not show the empty/no-neighbor signatures used by this rule.,Medium
+C009,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C009,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C009,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C009,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C009,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C009,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C009,DNS-001,WARNING,"DNS evidence is present, but this checker cannot fully validate record correctness without a DNS zone/database view.",DNS/lookup evidence supplied,Medium
+C010,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C010,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C010,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C010,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C010,VLAN-002,NOT_APPLICABLE,No 'show vlan brief' output available for VLAN-presence validation.,,High
+C010,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C010,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C010,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C010,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C010,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C010,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C010,ROUTE-001,FAIL,No OSPF routes and no OSPF neighbors are shown for a routed case.,No OSPF route + no OSPF neighbor,High
+C010,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C010,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C010,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C010,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C010,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C010,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C010,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C011,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C011,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C011,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C011,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C011,VLAN-002,PASS,VLAN 30 is present in the supplied VLAN table.,Present VLANs=[30],High
+C011,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C011,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C011,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C011,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C011,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C011,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C011,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C011,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C011,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C011,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C011,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C011,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C011,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C011,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C012,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C012,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C012,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C012,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C012,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C012,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C012,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C012,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C012,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C012,DHCP-002,WARNING,"DHCP-related symptom detected, but no interface configuration block was supplied.",No ip helper-address evidence available.,Medium
+C012,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C012,ROUTE-001,PASS,No deterministic missing-route signature was found in the supplied route evidence.,Route output does not show the empty/no-neighbor signatures used by this rule.,Medium
+C012,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C012,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C012,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C012,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C012,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C012,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C012,DNS-001,WARNING,"DNS evidence is present, but this checker cannot fully validate record correctness without a DNS zone/database view.",DNS/lookup evidence supplied,Medium
+C013,IPCFG-006,PASS,Host 1 IP/mask/gateway are internally consistent at the subnet level.,"IP=192.168.2.50, Mask=255.255.255.0, Gateway=192.168.2.254",High
+C013,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C013,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C013,GW-001,FAIL,Observed gateway 192.168.2.254 does not match any supplied router interface IP in the host subnet.,Host subnet=192.168.2.0/24; gateway=192.168.2.254; router IPs=['192.168.2.1'],High
+C013,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C013,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C013,IF-001,PASS,No administratively-down/down interface was found in the supplied summary.,All parsed interfaces are operational.,High
+C013,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C013,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C013,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C013,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C013,ROUTE-001,PASS,No deterministic missing-route signature was found in the supplied route evidence.,Route output does not show the empty/no-neighbor signatures used by this rule.,Medium
+C013,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C013,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C013,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C013,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C013,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C013,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C013,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C014,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C014,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C014,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C014,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C014,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C014,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C014,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C014,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C014,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C014,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C014,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C014,ROUTE-001,FAIL,Routing evidence contains an empty route view for a case describing remote connectivity failure.,No route/static route output shown.,High
+C014,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C014,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C014,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C014,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C014,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C014,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C014,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C015,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C015,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C015,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C015,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C015,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C015,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C015,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C015,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C015,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C015,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C015,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C015,ROUTE-001,PASS,No deterministic missing-route signature was found in the supplied route evidence.,Route output does not show the empty/no-neighbor signatures used by this rule.,Medium
+C015,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C015,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C015,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C015,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C015,EIGRP-001,FAIL,"Different EIGRP autonomous-system numbers are shown: [100, 200].","EIGRP AS values=[100, 200]",High
+C015,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C015,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C016,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C016,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C016,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C016,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C016,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C016,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C016,IF-001,FAIL,One or more interfaces are down in the supplied interface summary.,GigabitEthernet0/0 administratively down/down,High
+C016,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C016,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C016,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C016,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C016,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C016,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C016,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C016,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C016,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C016,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C016,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C016,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C017,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C017,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C017,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C017,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C017,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C017,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C017,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C017,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C017,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C017,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C017,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C017,ROUTE-001,PASS,No deterministic missing-route signature was found in the supplied route evidence.,Route output does not show the empty/no-neighbor signatures used by this rule.,Medium
+C017,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C017,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C017,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C017,OSPF-001,WARNING,"Multiple OSPF areas appear in the supplied interface summaries: ['0', '1'].","Areas=['0', '1']",Medium
+C017,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C017,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C017,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C018,IPCFG-006,PASS,Host 1 IP/mask/gateway are internally consistent at the subnet level.,"IP=192.168.2.77, Mask=255.255.255.128, Gateway=192.168.2.1",High
+C018,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C018,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C018,GW-001,NOT_APPLICABLE,No router interface IPs were available for gateway comparison.,,High
+C018,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C018,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C018,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C018,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C018,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C018,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C018,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C018,ROUTE-001,PASS,No deterministic missing-route signature was found in the supplied route evidence.,Route output does not show the empty/no-neighbor signatures used by this rule.,Medium
+C018,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C018,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C018,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C018,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C018,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C018,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C018,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C019,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C019,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C019,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C019,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C019,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C019,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C019,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C019,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C019,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C019,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C019,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C019,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C019,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C019,NAT-001,FAIL,NAT configuration is missing one or more required interface roles.,ip nat outside,High
+C019,NAT-002,PASS,NAT source ACL 1 has a parsable permit network; no deterministic mismatch proven.,Permit network=10.0.0.0 wildcard=0.255.255.255,Medium
+C019,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C019,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C019,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C019,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C020,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C020,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C020,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C020,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C020,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C020,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C020,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C020,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C020,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C020,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C020,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C020,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C020,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C020,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C020,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C020,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C020,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C020,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C020,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C021,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C021,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C021,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C021,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C021,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C021,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C021,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C021,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C021,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C021,DHCP-002,WARNING,"DHCP-related symptom detected, but no interface configuration block was supplied.",No ip helper-address evidence available.,Medium
+C021,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C021,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C021,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C021,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C021,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C021,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C021,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C021,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C021,DNS-001,FAIL,DNS forwarding/server configuration lacks an upstream ip name-server entry in the supplied evidence.,ip dns server present; no ip name-server,High
+C022,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C022,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C022,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C022,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C022,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C022,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C022,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C022,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C022,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C022,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C022,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C022,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C022,ACL-001,WARNING,ACL deny entries exist; deterministic checker cannot prove whether they block the affected flow without full traffic context.,30 deny tcp any any eq 443,Medium
+C022,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C022,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C022,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C022,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C022,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C022,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C023,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C023,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C023,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C023,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C023,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C023,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C023,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C023,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C023,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C023,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C023,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C023,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C023,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C023,NAT-001,FAIL,NAT configuration is missing one or more required interface roles.,"ip nat inside, ip nat outside",High
+C023,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C023,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C023,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C023,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C023,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C024,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C024,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C024,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C024,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C024,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C024,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C024,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C024,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C024,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C024,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C024,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C024,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C024,ACL-001,FAIL,An explicit deny ip any any appears in the supplied ACL evidence.,10 deny ip any any,High
+C024,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C024,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C024,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C024,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C024,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C024,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C025,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C025,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C025,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C025,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C025,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C025,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C025,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C025,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C025,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C025,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C025,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C025,ROUTE-001,PASS,No deterministic missing-route signature was found in the supplied route evidence.,Route output does not show the empty/no-neighbor signatures used by this rule.,Medium
+C025,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C025,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C025,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C025,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C025,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C025,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C025,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C026,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C026,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C026,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C026,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C026,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C026,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C026,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C026,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C026,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C026,DHCP-002,PASS,No deterministic missing-helper condition was established from the supplied evidence.,Helper configuration evidence is present or case is not a relay case.,Medium
+C026,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C026,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C026,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C026,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C026,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C026,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C026,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C026,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C026,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C027,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C027,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C027,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C027,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C027,VLAN-002,NOT_APPLICABLE,No 'show vlan brief' output available for VLAN-presence validation.,,High
+C027,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C027,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C027,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C027,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C027,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C027,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C027,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C027,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C027,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C027,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C027,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C027,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C027,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C027,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C028,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C028,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C028,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C028,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C028,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C028,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C028,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C028,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C028,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C028,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C028,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C028,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C028,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C028,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C028,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C028,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C028,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C028,WIFI-001,FAIL,Wireless signal metrics indicate poor link quality.,RSSI -82 dBm; SNR 6 dB,High
+C028,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C029,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C029,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C029,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C029,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C029,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C029,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C029,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C029,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C029,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C029,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C029,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C029,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C029,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C029,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C029,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C029,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C029,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C029,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C029,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High
+C030,IPCFG-001,NOT_APPLICABLE,No PC ipconfig-style block found.,,High
+C030,IPCFG-007,NOT_APPLICABLE,No explicit observed-vs-intended subnet mask comparison can be made.,,High
+C030,IP-001,PASS,No conflicting IP-to-MAC mapping was detected in ARP-style evidence.,ARP evidence checked for one IP resolving to multiple MAC addresses.,High
+C030,GW-001,NOT_APPLICABLE,No PC ipconfig block found.,,High
+C030,VLAN-002,NOT_APPLICABLE,No single required VLAN could be inferred from the case context.,,High
+C030,EVID-001,PASS,No explicit uncertainty statement was found in the supplied case evidence.,Evidence-sufficiency wording checked.,Medium
+C030,IF-001,NOT_APPLICABLE,No 'show ip interface brief' table found.,,High
+C030,VLAN-001,NOT_APPLICABLE,No explicit intended VLAN could be inferred from the case context.,,High
+C030,DHCP-001,NOT_APPLICABLE,No DHCP pool utilization block found.,,High
+C030,DHCP-002,NOT_APPLICABLE,Case symptom does not clearly indicate DHCP provisioning trouble.,,Medium
+C030,TRUNK-001,NOT_APPLICABLE,No explicit trunk allowed-VLAN list found.,,High
+C030,ROUTE-001,NOT_APPLICABLE,Symptom does not clearly indicate a routed-connectivity problem.,,Medium
+C030,ACL-001,NOT_APPLICABLE,No ACL deny entries found.,,High
+C030,NAT-001,NOT_APPLICABLE,No NAT configuration evidence found.,,High
+C030,NAT-002,NOT_APPLICABLE,No NAT source-list configuration found.,,High
+C030,OSPF-001,NOT_APPLICABLE,No multi-end OSPF area mismatch signature detected.,,High
+C030,EIGRP-001,NOT_APPLICABLE,No EIGRP configuration evidence found.,,High
+C030,WIFI-001,NOT_APPLICABLE,No wireless RSSI/SNR evidence found.,,High
+C030,DNS-001,NOT_APPLICABLE,No DNS-related evidence found.,,High

@@ -1,0 +1,5 @@
+case_id,fault,osi_layer,concept_tag,severity,confidence,next_command,fix,reasoning
+C001,"Access port Fa0/5 on switch SW1 is incorrectly configured in VLAN 10 (Sales) instead of VLAN 20 (Engineering). Consequently, PC-ENG1 is placed in the wrong broadcast domain and receives an IP address in the 10.10.10.0/24 subnet via DHCP/static configuration while its default gateway is set to 10.10.20.1 (VLAN 20), making the gateway and network unreachable.",2,vlan,high,high,show running-config interface fa0/5,"On SW1, change the access VLAN for port Fa0/5 to VLAN 20 by executing:
+interface fa0/5
+ switchport access vlan 20
+Then verify connectivity from PC-ENG1 to its default gateway 10.10.20.1.",The pre-analysis and show commands confirm that interface Fa0/5 is assigned to VLAN 10 while the host configuration and topology dictate it belongs to VLAN 20. This Layer 2 misconfiguration causes an IP subnet mismatch where the host IP (10.10.10.45) cannot reach its gateway (10.10.20.1).
